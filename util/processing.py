@@ -10,6 +10,7 @@ from util.feedhandler import FeedHandler
 import datetime
 import threading
 import traceback
+import sys
 from time import sleep
 
 
@@ -27,13 +28,17 @@ class BatchProcess(threading.Thread):
         Starts the BatchThreadPool
         """
 
-        while self.running:
-            # Init workload queue, add queue to ThreadPool
-            url_queue = self.db.get_all_urls()
-            self.parse_parallel(queue=url_queue, threads=4)
+        try:
+            while self.running:
+                # Init workload queue, add queue to ThreadPool
+                url_queue = self.db.get_all_urls()
+                self.parse_parallel(queue=url_queue, threads=4)
 
-            # Sleep for interval
-            sleep(self.update_interval)
+                # Sleep for interval
+                sleep(self.update_interval)
+        except Exception as e:
+            print(e)
+            sys.exit(1)
 
     def parse_parallel(self, queue, threads):
         time_started = datetime.datetime.now()
